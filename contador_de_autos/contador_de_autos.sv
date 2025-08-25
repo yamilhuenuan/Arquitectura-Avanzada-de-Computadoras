@@ -164,26 +164,28 @@ endmodule
 module fsm_autos (
     input  logic clk,
     input  logic reset,
-    input  logic S1,      // Sensor 1
-    input  logic S2,      // Sensor 2
-    output logic vehicle_entered,  // Pulso de entrada
-    output logic vehicle_exited    // Pulso de salida
+    input  logic S1, S2,
+    output logic vehicle_entered,
+    output logic vehicle_exited
 );
 
-    // Estados optimizados
+    // Estados necesarios para detectar ORDEN de desactivación
     typedef enum logic [2:0] {
-        IDLE,           // 000 - Esperando
-        S1_ACTIVADO,    // 001 - S1 activado (entrada)
-        S2_ACTIVADO,    // 010 - S2 activado (entrada)
-        S2_PRIMERO,     // 011 - S2 activado (salida)
-        S1_PRIMERO      // 100 - S1 activado (salida)
+        IDLE,               // 000 - Esperando
+        S1_ACTIVATED,       // 001 - S1 activado (entrada)
+        S2_ACTIVATED,       // 010 - S2 activado (después de S1)
+        S1_DEACTIVATED,     // 011 - S1 desactivado (antes que S2)
+        S2_DEACTIVATED,     // 100 - S2 desactivado (después de S1) - ENTRADA
+        S2_ACTIVATED_F,     // 101 - S2 activado primero (salida)
+        S1_ACTIVATED_F,     // 110 - S1 activado (después de S2)
+        S2_DEACTIVATED_F    // 111 - S2 desactivado (antes que S1) - SALIDA
     } state_t;
 
-    state_t estado_actual, estado_siguiente;
+    state_t current_state, next_state;
 
     // Detección de flancos
     logic S1_prev, S2_prev;
-    logic S1_rise, S2_rise;
+    logic S1_rise, S2_rise, S1_fall, S2_fall;
 
     always_ff @(posedge clk or posedge reset) begin
         if (reset) begin
@@ -197,70 +199,80 @@ module fsm_autos (
 
     assign S1_rise = S1 && !S1_prev;
     assign S2_rise = S2 && !S2_prev;
+    assign S1_fall = !S1 && S1_prev;
+    assign S2_fall = !S2 && S2_prev;
 
-    // ---- Registro de estado ----
-    always_ff @(posedge clk or posedge reset) begin
-        if (reset)
-            estado_actual <= IDLE;
-        else
-            estado_actual <= estado_siguiente;
-    end
-
-    // ---- Lógica de transiciones SIMPLIFICADA ----
+    // Lógica de transiciones
     always_comb begin
-        estado_siguiente = estado_actual;
+        next_state = current_state;
         
-        case (estado_actual)
+        case (current_state)
             IDLE: begin
                 if (S1_rise && !S2) 
-                    estado_siguiente = S1_ACTIVADO;
+                    next_state = S1_ACTIVATED;      // Posible entrada
                 else if (S2_rise && !S1) 
-                    estado_siguiente = S2_PRIMERO;
+                    next_state = S2_ACTIVATED_F;    // Posible salida
             end
 
-            S1_ACTIVADO: begin
+            // Secuencia ENTRADA: S1↑ → S2↑ → S1↓ → S2↓
+            S1_ACTIVATED: begin
                 if (S2_rise) 
-                    estado_siguiente = S2_ACTIVADO;
-                else if (!S1) 
-                    estado_siguiente = IDLE; // Marcha atrás
+                    next_state = S2_ACTIVATED;      // S2 activado después
+                else if (S1_fall) 
+                    next_state = IDLE;              // Marcha atrás
             end
 
-            S2_ACTIVADO: begin
-                if (!S1 && !S2) 
-                    estado_siguiente = IDLE; // Secuencia completada
-                else if (!S2) 
-                    estado_siguiente = S1_ACTIVADO; // Marcha atrás
+            S2_ACTIVATED: begin
+                if (S1_fall) 
+                    next_state = S1_DEACTIVATED;    // S1 liberado primero
+                else if (S2_fall) 
+                    next_state = S1_ACTIVATED;      // Marcha atrás
             end
 
-            S2_PRIMERO: begin
+            S1_DEACTIVATED: begin
+                if (S2_fall) 
+                    next_state = S2_DEACTIVATED;    // S2 liberado después - ENTRADA!
+                else if (S1_rise) 
+                    next_state = S2_ACTIVATED;      // Vuelve atrás
+            end
+
+            // Secuencia SALIDA: S2↑ → S1↑ → S2↓ → S1↓
+            S2_ACTIVATED_F: begin
                 if (S1_rise) 
-                    estado_siguiente = S1_PRIMERO;
-                else if (!S2) 
-                    estado_siguiente = IDLE; // Marcha atrás
+                    next_state = S1_ACTIVATED_F;    // S1 activado después
+                else if (S2_fall) 
+                    next_state = IDLE;              // Marcha atrás
             end
 
-            S1_PRIMERO: begin
-                if (!S2 && !S1) 
-                    estado_siguiente = IDLE; // Secuencia completada
-                else if (!S1) 
-                    estado_siguiente = S2_PRIMERO; // Marcha atrás
+            S1_ACTIVATED_F: begin
+                if (S2_fall) 
+                    next_state = S2_DEACTIVATED_F;  // S2 liberado primero
+                else if (S1_fall) 
+                    next_state = S2_ACTIVATED_F;    // Marcha atrás
             end
+
+            S2_DEACTIVATED_F: begin
+                if (S1_fall) 
+                    next_state = IDLE;              // S1 liberado después - SALIDA!
+                else if (S2_rise) 
+                    next_state = S1_ACTIVATED_F;    // Vuelve atrás
+            end
+
+            default: next_state = IDLE;
         endcase
     end
 
-    // ---- Salidas SIMPLIFICADAS ----
+    // Registro de estado
     always_ff @(posedge clk or posedge reset) begin
-        if (reset) begin
-            vehicle_entered <= 0;
-            vehicle_exited  <= 0;
-        end else begin
-            // Entrada: S1 activado → S2 activado → ambos liberados
-            vehicle_entered <= (estado_actual == S2_ACTIVADO && estado_siguiente == IDLE);
-            
-            // Salida: S2 activado → S1 activado → ambos liberados
-            vehicle_exited  <= (estado_actual == S1_PRIMERO && estado_siguiente == IDLE);
-        end
+        if (reset) 
+            current_state <= IDLE;
+        else 
+            current_state <= next_state;
     end
+
+    // Salidas - Pulsos de un ciclo
+    assign vehicle_entered = (current_state == S2_DEACTIVATED);
+    assign vehicle_exited = (current_state == S2_DEACTIVATED_F && next_state == IDLE);
 
 endmodule
 //============================================================
@@ -353,17 +365,17 @@ module display_7seg (
 
     always_comb begin
         case (digit)
-            4'd0: seg = 7'b0111111; //  gfedcba
-            4'd1: seg = 7'b0000110;
-            4'd2: seg = 7'b1011011;
-            4'd3: seg = 7'b1001111;
-            4'd4: seg = 7'b1100110;
-            4'd5: seg = 7'b1101101;
-            4'd6: seg = 7'b1111101;
-            4'd7: seg = 7'b0000111;
-            4'd8: seg = 7'b1111111;
-            4'd9: seg = 7'b1101111;
-            default: seg = 7'b0000000;  // Apaga el display para valores inválidos
+            4'd0: seg = 7'b1000000;
+            4'd1: seg = 7'b1111001;
+            4'd2: seg = 7'b0100100;
+            4'd3: seg = 7'b0110000;
+            4'd4: seg = 7'b0011001;
+            4'd5: seg = 7'b0010010;
+            4'd6: seg = 7'b0000010;
+            4'd7: seg = 7'b1111000;
+            4'd8: seg = 7'b0000000;
+            4'd9: seg = 7'b0010000;
+            default: seg = 7'b1111111;  // Apaga el display para valores inválidos
         endcase
     end
 endmodule
