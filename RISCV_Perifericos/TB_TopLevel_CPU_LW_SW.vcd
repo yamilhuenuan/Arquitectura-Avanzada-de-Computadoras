@@ -1,0 +1,305 @@
+$date
+	Mon Oct 27 20:37:04 2025
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module TB_TopLevel_CPU_LW_SW $end
+$var wire 8 ! leds [7:0] $end
+$var wire 32 " WriteDataWB [31:0] $end
+$var wire 32 # ALUResult [31:0] $end
+$var reg 1 $ clk $end
+$var reg 1 % rst $end
+$var reg 8 & switches [7:0] $end
+$scope module uut $end
+$var wire 1 $ clk $end
+$var wire 1 % rst $end
+$var wire 8 ' switches [7:0] $end
+$var wire 1 ( sel_B $end
+$var wire 1 ) sel_A $end
+$var wire 32 * rdata2 [31:0] $end
+$var wire 32 + rdata1 [31:0] $end
+$var wire 1 , ram_we $end
+$var wire 32 - ram_wdata [31:0] $end
+$var wire 32 . ram_rdata [31:0] $end
+$var wire 1 / ram_en $end
+$var wire 32 0 ram_addr [31:0] $end
+$var wire 32 1 pc_plus4 [31:0] $end
+$var wire 32 2 pc_current [31:0] $end
+$var wire 8 3 leds [7:0] $end
+$var wire 32 4 inst [31:0] $end
+$var wire 32 5 gpio_sw_rdata [31:0] $end
+$var wire 1 6 gpio_sw_en $end
+$var wire 1 7 gpio_leds_we $end
+$var wire 32 8 gpio_leds_wdata [31:0] $end
+$var wire 32 9 gpio_leds_rdata [31:0] $end
+$var wire 1 : gpio_leds_en $end
+$var wire 1 ; br_flag $end
+$var wire 4 < alu_op [3:0] $end
+$var wire 32 = WriteDataWB [31:0] $end
+$var wire 1 > RegWrite $end
+$var wire 2 ? PCsrc [1:0] $end
+$var wire 1 @ MemWrite $end
+$var wire 2 A MemToReg [1:0] $end
+$var wire 1 B MemRead $end
+$var wire 32 C MemData [31:0] $end
+$var wire 32 D ImmExt [31:0] $end
+$var wire 32 E ALUResult [31:0] $end
+$scope module u_decode $end
+$var wire 1 $ clk $end
+$var wire 1 % rst $end
+$var wire 5 F waddr [4:0] $end
+$var wire 32 G rdata2 [31:0] $end
+$var wire 32 H rdata1 [31:0] $end
+$var wire 5 I raddr2 [4:0] $end
+$var wire 5 J raddr1 [4:0] $end
+$var wire 7 K opcode [6:0] $end
+$var wire 7 L funct7 [6:0] $end
+$var wire 3 M funct3 [2:0] $end
+$var wire 1 ; br_flag $end
+$var wire 4 N alu_op [3:0] $end
+$var wire 32 O WriteDataWB [31:0] $end
+$var wire 1 > RegWrite $end
+$var wire 2 P PCsrc [1:0] $end
+$var wire 1 @ MemWrite $end
+$var wire 2 Q MemToReg [1:0] $end
+$var wire 2 R MemSize [1:0] $end
+$var wire 1 S MemSign $end
+$var wire 1 B MemRead $end
+$var wire 1 T Jump_lr $end
+$var wire 1 U Jump $end
+$var wire 32 V Inst [31:0] $end
+$var wire 3 W ImmSrc [2:0] $end
+$var wire 32 X ImmExt [31:0] $end
+$var wire 1 Y Branch $end
+$var wire 1 ( ALUSrcB $end
+$var wire 1 ) ALUSrcA $end
+$var wire 2 Z ALUOp [1:0] $end
+$scope module u_aludec $end
+$var wire 7 [ funct7 [6:0] $end
+$var wire 3 \ funct3 [2:0] $end
+$var wire 2 ] ALUOp [1:0] $end
+$var reg 4 ^ alu_op [3:0] $end
+$upscope $end
+$scope module u_decoder $end
+$var wire 7 _ opcode [6:0] $end
+$var wire 3 ` funct3 [2:0] $end
+$var reg 2 a ALUOp [1:0] $end
+$var reg 1 ) ALUSrcA $end
+$var reg 1 ( ALUSrcB $end
+$var reg 1 Y Branch $end
+$var reg 3 b ImmSrc [2:0] $end
+$var reg 1 U Jump $end
+$var reg 1 T Jump_lr $end
+$var reg 1 B MemRead $end
+$var reg 1 S MemSign $end
+$var reg 2 c MemSize [1:0] $end
+$var reg 2 d MemToReg [1:0] $end
+$var reg 1 @ MemWrite $end
+$var reg 1 > RegWrite $end
+$upscope $end
+$scope module u_immgen $end
+$var wire 3 e ImmSrcD [2:0] $end
+$var wire 32 f imm_u [31:0] $end
+$var wire 32 g imm_s [31:0] $end
+$var wire 32 h imm_j [31:0] $end
+$var wire 32 i imm_i [31:0] $end
+$var wire 32 j imm_b [31:0] $end
+$var wire 32 k Inst [31:0] $end
+$var reg 32 l ImmExtD [31:0] $end
+$upscope $end
+$scope module u_parser $end
+$var wire 5 m waddr [4:0] $end
+$var wire 5 n raddr2 [4:0] $end
+$var wire 5 o raddr1 [4:0] $end
+$var wire 7 p opcode [6:0] $end
+$var wire 32 q Inst [31:0] $end
+$var wire 7 r Funct7 [6:0] $end
+$var wire 3 s Funct3 [2:0] $end
+$upscope $end
+$scope module u_pcctrl $end
+$var wire 1 Y branch $end
+$var wire 1 T jalr $end
+$var wire 1 U jump $end
+$var wire 1 ; br_flag $end
+$var reg 2 t PCsrc [1:0] $end
+$upscope $end
+$scope module u_regfile $end
+$var wire 1 $ clk $end
+$var wire 5 u raddr1 [4:0] $end
+$var wire 5 v raddr2 [4:0] $end
+$var wire 1 > reg_wr $end
+$var wire 1 % rst $end
+$var wire 5 w waddr [4:0] $end
+$var wire 32 x wdata [31:0] $end
+$var reg 32 y rdata1 [31:0] $end
+$var reg 32 z rdata2 [31:0] $end
+$var integer 32 { i [31:0] $end
+$upscope $end
+$upscope $end
+$scope module u_dmem $end
+$var wire 1 $ clk $end
+$var wire 1 , we $end
+$var wire 32 | wdata [31:0] $end
+$var wire 1 / en $end
+$var wire 32 } addr [31:0] $end
+$var reg 32 ~ rdata [31:0] $end
+$upscope $end
+$scope module u_execute $end
+$var wire 4 !" ALUControl [3:0] $end
+$var wire 32 "" ImmExt [31:0] $end
+$var wire 3 #" funct3 [2:0] $end
+$var wire 32 $" rdata1 [31:0] $end
+$var wire 32 %" rdata2 [31:0] $end
+$var wire 1 ) sel_A $end
+$var wire 1 ( sel_B $end
+$var wire 1 ; br_flag $end
+$var wire 32 &" SrcB [31:0] $end
+$var wire 32 '" SrcA [31:0] $end
+$var wire 32 (" PC [31:0] $end
+$var wire 32 )" ALUResult [31:0] $end
+$scope module u_ALU $end
+$var wire 4 *" alu_op [3:0] $end
+$var wire 5 +" shamt [4:0] $end
+$var wire 32 ," SrcB [31:0] $end
+$var wire 32 -" SrcA [31:0] $end
+$var reg 32 ." alu_result [31:0] $end
+$upscope $end
+$scope module u_branch_unit $end
+$var wire 3 /" funct3 [2:0] $end
+$var wire 32 0" rs1 [31:0] $end
+$var wire 32 1" rs2 [31:0] $end
+$var reg 1 ; br_flag $end
+$upscope $end
+$scope module u_mux_selA $end
+$var wire 32 2" rdata1 [31:0] $end
+$var wire 1 ) sel_A $end
+$var wire 32 3" Addr [31:0] $end
+$var reg 32 4" SrcA [31:0] $end
+$upscope $end
+$scope module u_mux_selB $end
+$var wire 32 5" ImmExtD [31:0] $end
+$var wire 32 6" rdata2 [31:0] $end
+$var wire 1 ( sel_B $end
+$var reg 32 7" SrcB [31:0] $end
+$upscope $end
+$upscope $end
+$scope module u_fetch $end
+$var wire 2 8" PCsrc [1:0] $end
+$var wire 32 9" branch_target [31:0] $end
+$var wire 1 $ clk $end
+$var wire 32 :" jal_target [31:0] $end
+$var wire 32 ;" pc_current [31:0] $end
+$var wire 1 % rst $end
+$var wire 32 <" pc_plus4 [31:0] $end
+$var wire 32 =" pc_out [31:0] $end
+$var wire 32 >" pc_in [31:0] $end
+$var wire 32 ?" inst [31:0] $end
+$scope module IMEM $end
+$var wire 32 @" inst [31:0] $end
+$var wire 32 A" addr [31:0] $end
+$upscope $end
+$scope module PC_inc $end
+$var wire 32 B" pc_plus4 [31:0] $end
+$var wire 32 C" pc_in [31:0] $end
+$upscope $end
+$scope module PC_mux $end
+$var wire 2 D" PCsrc [1:0] $end
+$var wire 32 E" branch_target [31:0] $end
+$var wire 32 F" jal_target [31:0] $end
+$var wire 32 G" pc_plus4 [31:0] $end
+$var wire 32 H" jalr_aligned [31:0] $end
+$var reg 32 I" pc_next [31:0] $end
+$upscope $end
+$scope module PC_reg $end
+$var wire 1 $ clk $end
+$var wire 32 J" pc_in [31:0] $end
+$var wire 1 % rst $end
+$var reg 32 K" pc_out [31:0] $end
+$upscope $end
+$upscope $end
+$scope module u_gpio_leds $end
+$var wire 1 $ clk $end
+$var wire 8 L" leds [7:0] $end
+$var wire 1 7 we $end
+$var wire 32 M" wdata [31:0] $end
+$var wire 32 N" rdata [31:0] $end
+$var wire 1 : en $end
+$var reg 8 O" reg_leds [7:0] $end
+$upscope $end
+$scope module u_gpio_sw $end
+$var wire 1 $ clk $end
+$var wire 8 P" switches [7:0] $end
+$var wire 1 6 en $end
+$var reg 32 Q" rdata [31:0] $end
+$upscope $end
+$scope module u_memctrl $end
+$var wire 32 R" addr [31:0] $end
+$var wire 32 S" gpio_leds_rdata [31:0] $end
+$var wire 32 T" gpio_sw_rdata [31:0] $end
+$var wire 1 B mem_read $end
+$var wire 1 @ mem_write $end
+$var wire 32 U" ram_rdata [31:0] $end
+$var wire 32 V" wdata [31:0] $end
+$var reg 1 : gpio_leds_en $end
+$var reg 32 W" gpio_leds_wdata [31:0] $end
+$var reg 1 7 gpio_leds_we $end
+$var reg 1 6 gpio_sw_en $end
+$var reg 32 X" ram_addr [31:0] $end
+$var reg 1 / ram_en $end
+$var reg 32 Y" ram_wdata [31:0] $end
+$var reg 1 , ram_we $end
+$var reg 32 Z" rdata [31:0] $end
+$upscope $end
+$scope module u_wb_mux $end
+$var wire 32 [" ALUResult [31:0] $end
+$var wire 32 \" MemData [31:0] $end
+$var wire 2 ]" MemToReg [1:0] $end
+$var wire 32 ^" PCplus4 [31:0] $end
+$var reg 32 _" WriteData [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b10000000000000000000000000000 _"
+b100 ^"
+b1 ]"
+b0xxxxxxxx \"
+b10000000000000000000000000000 ["
+b0xxxxxxxx Z"
+b0 Y"
+b10000000000000000000000000000 X"
+b0 W"
+b0 V"
+b0 U"
+b0 T"
+b0xxxxxxxx S"
+b10000000000000000000000000000 R"
+b0 Q"
+b1111 P"
+bx O"
+b0xxxxxxxx N"
+b0 M"
+bx L"
+b0 K"
+b100 J"
+b100 I"
+b10000000000000000000000000000 H"
+b100 G"
+b10000000000000000000000000000 F"
+b10000000000000000000000000000 E"
+b0 D"
+b0 C"
+b100 B"
+b0 A"
+b10000000000000000000100110111 @"
+b10000000000000000000100110111 ?"
+b100 >"
+b0 ="
+b100 <"
+b0 ;"
